@@ -1,2 +1,7 @@
 # IMDB File Ignore
 IMDB/
+
+
+# VS code
+.DS_Store
+.DS_Store
