@@ -4,13 +4,14 @@ use imdb;
 create table movie (
 	tconst varchar(20) primary key,
 	titleType varchar(20),
-    primaryTitle varchar(2048),
+    primaryTitle varchar(500),
     originalTitle varchar(2048),
     isAdult boolean,
     startYear int,
     endYear int,
     runtimeMinutes int
 );
+create index movieTitle on movie(primaryTitle);
 
 # Weak Entity : 영화 장르 정보
 create table genres (
@@ -72,6 +73,7 @@ create table directors (
     primary key (tconst, director),
     foreign key (tconst) references movie(tconst)
 );
+create index idx_director on directors(director);
 
 # Weak Entity : 작가 정보
 create table writers (
@@ -89,15 +91,12 @@ create table principals (
     category varchar(200),
     job varchar(2000),
     characters varchar(2000),
-    primary key (tconst, ordering, nconst),
-    foreign key (tconst) references movie(tconst),
-    foreign key (tconst, ordering) references akas(tconst, ordering)
+    primary key (tconst, ordering, nconst)
 );
 
 # title_principals table을 변형해서 사용
 ALTER TABLE title_principals RENAME principals;
 ALTER TABLE principals ADD PRIMARY KEY (tconst, ordering, nconst);
--- foreign key (tconst, ordering) references akas(tconst, ordering);
 
 
 # Strong Entity : 사람 정보
@@ -107,6 +106,7 @@ create table person (
     birthYear int,
     deathYear int
 );
+create index personName on person(primaryName);
 
 
 # Weak Entity : profession 정보
@@ -122,7 +122,6 @@ create table knownForTitles (
 	nconst varchar(20),
     tconst varchar(20),
     primary key (tconst, nconst),
-    -- foreign key (tconst) references movie(tconst),
     foreign key (nconst) references person(nconst)
 );
 
@@ -137,6 +136,9 @@ create table ratings (
 # title_ratings table을 변형해서 사용
 ALTER TABLE title_ratings RENAME ratings;
 ALTER TABLE ratings ADD PRIMARY KEY (tconst);
+ALTER TABLE ratings add constraint foreign key (tconst) references movie(tconst);
+
+
 
 
 
@@ -154,6 +156,7 @@ alter table akas_attributes drop foreign key akas_attributes_ibfk_1;
 # Foreign key 삭제하고 on delete cascade 추가
 ALTER TABLE akas_types DROP FOREIGN KEY feed_ibfk_3;
 ALTER TABLE feed ADD CONSTRAINT FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE;
+
 
 
 
